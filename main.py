@@ -56,47 +56,48 @@ def big_num_addition(i1, i2, base):
 	return result_int
 
 def k_split(num):
+ 	# Find k (half of n digits)
+    k = len(num) // 2
 
-	# Find k(half of n digits)
-	k = len(num) // 2
+    # Find second half (i.e. greater half) of num
+    num1 = num[:k]
 
-	# Find second half (i.e. greater half) of num
-	num1 = num[:k]
+    # Find first half (i.e. lesser half) of num
+    num0 = num[k:]
 
-	# Find first half (i.e. lesser half) of num
-	num0 = num[:(len(num) - k)]
+    return num1, num0
 
-	return num1, num0
+# Base cases
+    if n == 0: return 0
+    if n == 1: return int(X[0])*int(Y[0])
 
 def karatsuba(i1, i2, base):
 
-	#if int(i1) < base and int(i2) < base:
-	#	return int(i1) * int(i2)
+	# Small input consideration
+
+	if (len(i1) == 1 or len(i2) == 1):
+		return int(i1) * int(i2)
 
 	# Get max length of integer - put zeros at the front of the shorter one
-	max_len = max(len(i1), len(i2))
+	n = max(len(i1), len(i2))
+	#print(max_len)
 
 	# Front fill with zeros so that lengths are equal
-	a, b = map(lambda element: element.zfill(max_len), [i1, i2])
+	# a, b = map(lambda element: element.zfill(max_len), [i1, i2])
+	a = i1.zfill(n)
+	b = i1.zfill(n)
+	
+	k = n // 2
+	a1, a0 = a[:k], a[k:]
+	b1, b0 = b[:k], b[k:]
 
-	# Small input consideration
-	if (max_len < 4):
-		return int(a) * int(b)
-	else:
-		# Find k
-		k = max_len // 2
-
-		# Split the numbers
-		a1, a0 = k_split(a)
-		b1, b0 = k_split(b)
-
-		# Solve three sub-problems
-		p0 = karatsuba(a0, b0, base)
-		p1 = karatsuba(a0+a1, b0+b1, base)
-		p2 = karatsuba(a1, b1, base)
-		
-		# Combine the sub-problems
-		return p2*pow(base, 2*k) + ((p1-p2-p0)*pow(base, k) + p0)
+	# Solve three sub-problems
+	p0 = karatsuba(a0, b0, base)
+	p1 = karatsuba((a0+a1), (b0+b1), base)
+	p2 = karatsuba(a1, b1, base)
+	
+	# Combine the sub-problems
+	return p2*pow(base, 2*k) + ((p1-p2-p0)*pow(base, k) + p0)
 
 # Take a line of input as string
 line = input()
