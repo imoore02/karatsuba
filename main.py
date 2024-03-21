@@ -1,4 +1,5 @@
 import string
+import math
 
 def validate_input(line):
 	try:
@@ -10,9 +11,9 @@ def validate_input(line):
 		# Stop program execution by raising an exception
 		raise SystemExit()
 	
-	if not (i1.isdigit() and i2.isdigit() and base.isdigit()):
-		print("Error: Non-digit characters found.")
-		raise SystemExit()
+#	if not ( int(i2) == 1i1.isdigit() and i2.isdigit() and base.isdigit()):
+#		print("Error: Non-digit characters found.")
+#		raise SystemExit()
 	
 	if len(i1) > 100 or len(i2) > 100:
 		print("Error: Integer inputs are too large. Enter integers up to 100 digits long.")
@@ -67,37 +68,43 @@ def k_split(num):
 
     return num1, num0
 
-# Base cases
-    if n == 0: return 0
-    if n == 1: return int(X[0])*int(Y[0])
-
 def karatsuba(i1, i2, base):
 
 	# Small input consideration
+	if (len(i1) < 4 or len(i2) < 4):
+		return int(i1, base) * int(i2, base)
 
-	if (len(i1) == 1 or len(i2) == 1):
-		return int(i1) * int(i2)
-
-	# Get max length of integer - put zeros at the front of the shorter one
+    # Get max length of integer - put zeros at the front of the shorter one
 	n = max(len(i1), len(i2))
-	#print(max_len)
 
-	# Front fill with zeros so that lengths are equal
-	# a, b = map(lambda element: element.zfill(max_len), [i1, i2])
+    # Front fill with zeros so that lengths are equal
 	a = i1.zfill(n)
-	b = i1.zfill(n)
+	b = i2.zfill(n)
 	
-	k = n // 2
-	a1, a0 = a[:k], a[k:]
-	b1, b0 = b[:k], b[k:]
+	k1 = (n + 1) // 2
+	k2 = n // 2
 
-	# Solve three sub-problems
+	#print ("BASE:   ", base)
+	a1, a0 = a[:k2], a[k2:]
+	b1, b0 = b[:k2], b[k2:]
+	#print("n: ", n, " k: ", k1)
+	#print("a1: ", a1, " a0: ", a0)
+	#print("b1: ", b1, " b0: ", b0)
+	#print(str(int(a0)+int(a1)), str(int(b0)+int(b1)))
+    # Solve three sub-problems
 	p0 = karatsuba(a0, b0, base)
-	p1 = karatsuba((a0+a1), (b0+b1), base)
-	p2 = karatsuba(a1, b1, base)
-	
-	# Combine the sub-problems
-	return p2*pow(base, 2*k) + ((p1-p2-p0)*pow(base, k) + p0)
+	p1 = karatsuba(a1, b1, base)
+	p2 = karatsuba(str(int(a0)+int(a1)), str(int(b0)+int(b1)), base)
+
+	#print("p0: ", p0)
+	#print("p1: ", p1)
+	#print("p2: ", p2)
+	print("base:", base, " k: ", k1)
+	print("return: ", p1*pow(base, 2*k1) + (p2-p1-p0)*pow(base, k1) + p0)
+
+	print("\n")
+    # Combine the sub-problems
+	return p1*pow(base, 2*k1) + (p2-p1-p0)*pow(base, k1) + p0
 
 # Take a line of input as string
 line = input()
