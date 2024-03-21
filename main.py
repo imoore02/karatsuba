@@ -99,10 +99,10 @@ def karatsuba(i1, i2, base):
 	#print("p0: ", p0)
 	#print("p1: ", p1)
 	#print("p2: ", p2)
-	print("base:", base, " k: ", k1)
-	print("return: ", p1*pow(base, 2*k1) + (p2-p1-p0)*pow(base, k1) + p0)
+	#print("base:", base, " k: ", k1)
+	#print("return: ", p1*pow(base, 2*k1) + (p2-p1-p0)*pow(base, k1) + p0)
 
-	print("\n")
+	#print("\n")
     # Combine the sub-problems
 	return p1*pow(base, 2*k1) + (p2-p1-p0)*pow(base, k1) + p0
 
