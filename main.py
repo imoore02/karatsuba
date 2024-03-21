@@ -1,7 +1,6 @@
 import string
 
 def validate_input(line):
-
 	try:
 		i1, i2, base = line.split()
 		# The split was successful
@@ -26,47 +25,78 @@ def validate_input(line):
 	
 	return i1, i2, base
 
-
-
 def big_num_addition(i1, i2, base):
-
+	
 	# Get max length of integer - put zeros at the front of the shorter one
 	max_len = max(len(i1), len(i2))
-
-	#		print("max_len: ", max_len)
 
 	# Front fill with zeros so that lengths are equal
 	a, b = map(lambda element: element.zfill(max_len), [i1, i2])
 
-	#		print("a:", a)
-	#		print("b:", b)
-
-	# Create an array init to zero 
+	# Create an array initated to zeros
 	#   --> max_len + 1 as the result can extend one beyond
 	result = [0] * (max_len + 1) 
-
-	#		print("result:", result)
 
 	# Set c0 to 0
 	carry = 0
 
 	# Loop through digits
 	for i in range(max_len - 1, -1, -1):
-		#		print("i:", i)
 		sum = int(a[i]) + int(b[i]) + carry
-		#		print("sum:", sum)
 		result [i + 1] = sum % int(base)
-		#		print("result[i+1]:", result[ i + 1])
 		carry = sum // int(base)
-		#		print("carry:", carry)
 	result[0] = carry
 
 	if result[0] == 0:
 		result.pop(0)
 	
-	return result
+	# Map array to an int
+	result_int = int(''.join(map(str, result)))
 
+	return result_int
 
+def k_split(num):
+
+	# Find k(half of n digits)
+	k = len(num) // 2
+
+	# Find second half (i.e. greater half) of num
+	num1 = num[:k]
+
+	# Find first half (i.e. lesser half) of num
+	num0 = num[:(len(num) - k)]
+
+	return num1, num0
+
+def karatsuba(i1, i2, base):
+
+	#if int(i1) < base and int(i2) < base:
+	#	return int(i1) * int(i2)
+
+	# Get max length of integer - put zeros at the front of the shorter one
+	max_len = max(len(i1), len(i2))
+
+	# Front fill with zeros so that lengths are equal
+	a, b = map(lambda element: element.zfill(max_len), [i1, i2])
+
+	# Small input consideration
+	if (max_len < 4):
+		return int(a) * int(b)
+	else:
+		# Find k
+		k = max_len // 2
+
+		# Split the numbers
+		a1, a0 = k_split(a)
+		b1, b0 = k_split(b)
+
+		# Solve three sub-problems
+		p0 = karatsuba(a0, b0, base)
+		p1 = karatsuba(a0+a1, b0+b1, base)
+		p2 = karatsuba(a1, b1, base)
+		
+		# Combine the sub-problems
+		return p2*pow(base, 2*k) + ((p1-p2-p0)*pow(base, k) + p0)
 
 # Take a line of input as string
 line = input()
@@ -75,6 +105,8 @@ line = input()
 i1, i2, base = validate_input(line)
 
 # School method addition of big numbers
-result = big_num_addition(i1, i2, base)
+result_sum = big_num_addition(i1, i2, base)
 
-print (result)
+result_mult = karatsuba(i1, i2, base)
+
+print (result_sum, result_mult)
