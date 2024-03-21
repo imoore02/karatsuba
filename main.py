@@ -72,7 +72,7 @@ def karatsuba(i1, i2, base):
 
 	# Small input consideration
 	if (len(i1) < 4 or len(i2) < 4):
-		return int(i1, base) * int(i2, base)
+		return int(i1) * int(i2)
 
     # Get max length of integer - put zeros at the front of the shorter one
 	n = max(len(i1), len(i2))
