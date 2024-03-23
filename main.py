@@ -29,10 +29,10 @@ def validate_input(line):
 def big_num_addition(i1, i2, base):
 	
 	# Get max length of integer - put zeros at the front of the shorter one
-	max_len = max(len(i1), len(i2))
+	max_len = max(len(str(i1)), len(str(i2)))
 
 	# Front fill with zeros so that lengths are equal
-	a, b = map(lambda element: element.zfill(max_len), [i1, i2])
+	a, b = map(lambda element: element.zfill(max_len), [str(i1), str(i2)])
 
 	# Create an array initated to zeros
 	#   --> max_len + 1 as the result can extend one beyond
@@ -51,60 +51,86 @@ def big_num_addition(i1, i2, base):
 	if result[0] == 0:
 		result.pop(0)
 	
-	# Map array to an int
+	# Map array to an int# Map array to an int
 	result_int = int(''.join(map(str, result)))
 
 	return result_int
 
-def k_split(num):
- 	# Find k (half of n digits)
-    k = len(num) // 2
-
-    # Find second half (i.e. greater half) of num
-    num1 = num[:k]
-
-    # Find first half (i.e. lesser half) of num
-    num0 = num[k:]
-
-    return num1, num0
-
 def karatsuba(i1, i2, base):
 
 	# Small input consideration
-	if (len(i1) < 4 or len(i2) < 4):
-		return int(i1) * int(i2)
+	if (len(str(i1)) == 1 or len(str(i2)) == 1):
+		#print ("mult_base: ", mult_base(i1, i2, base))
+		return mult_base(i1, i2, base)
 
     # Get max length of integer - put zeros at the front of the shorter one
-	n = max(len(i1), len(i2))
+	n = max(len(str(i1)), len(str(i2)))
 
     # Front fill with zeros so that lengths are equal
-	a = i1.zfill(n)
-	b = i2.zfill(n)
+	a = str(i1).zfill(n)
+	b = str(i2).zfill(n)
 	
 	k1 = (n + 1) // 2
-	k2 = n // 2
+	k = n // 2
 
 	#print ("BASE:   ", base)
-	a1, a0 = a[:k2], a[k2:]
-	b1, b0 = b[:k2], b[k2:]
-	#print("n: ", n, " k: ", k1)
+	a1, a0 = a[:k], a[k:]
+	b1, b0 = b[:k], b[k:]
 	#print("a1: ", a1, " a0: ", a0)
 	#print("b1: ", b1, " b0: ", b0)
-	#print(str(int(a0)+int(a1)), str(int(b0)+int(b1)))
+	#print("a1+a0: ", big_num_addition(a1, a0, base), " b1+b0: ", big_num_addition(b1, b0, base))
     # Solve three sub-problems
 	p0 = karatsuba(a0, b0, base)
 	p1 = karatsuba(a1, b1, base)
-	p2 = karatsuba(str(int(a0)+int(a1)), str(int(b0)+int(b1)), base)
-
+	p2 = karatsuba(big_num_addition(a1, a0, base), big_num_addition(b1, b0, base), base)
+	
 	#print("p0: ", p0)
 	#print("p1: ", p1)
 	#print("p2: ", p2)
-	#print("base:", base, " k: ", k1)
-	#print("return: ", p1*pow(base, 2*k1) + (p2-p1-p0)*pow(base, k1) + p0)
 
-	#print("\n")
     # Combine the sub-problems
-	return p1*pow(base, 2*k1) + (p2-p1-p0)*pow(base, k1) + p0
+	#print("\n")
+	sub = sub_base(p2, p1, base)
+	sub = sub_base(sub, p0, base)
+	res = big_num_addition(p1*pow(10, 2*k1), (sub)*pow(10, k1), base)
+	res = big_num_addition(res, p0, base)
+	return res
+
+def base_10_to_base_x(decimal_num, base):
+    if decimal_num == 0:
+        return "0"
+
+    result = ""
+    while decimal_num > 0:
+        remainder = decimal_num % base
+        result = str(remainder) + result
+        decimal_num //= base
+
+    return result
+
+def sub_base(a, b, base):
+	base = int(base)
+	a_dec = base_x_to_base_10(a, base)
+	b_dec = base_x_to_base_10(b, base)
+	res_base = base_10_to_base_x(a_dec-b_dec, base)
+	return int(res_base)
+
+def mult_base(a, b, base):
+     base = int(base)
+     a_dec = base_x_to_base_10(a, base)
+     b_dec = base_x_to_base_10(b, base)
+     res_base = base_10_to_base_x(a_dec*b_dec, base)
+     return int(res_base)
+
+def base_x_to_base_10(num, base):
+    num_str = str(num)
+    result = 0
+    
+    for digit in num_str:
+       digit_value = int(digit, base)
+       result = result * base + digit_value
+    
+    return result
 
 # Take a line of input as string
 line = input()
